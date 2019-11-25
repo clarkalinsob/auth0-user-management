@@ -5,10 +5,13 @@
       target="_blank"
       text
     >
-      <span class="mr-2">Call API</span>
+      <span class="mr-2">Call Users API</span>
       <v-icon>mdi-open-in-new</v-icon>
     </v-btn>
-    <p v-if="!loading">{{ apiMessage }}</p>
+    <div v-if="!loading">
+      <pre v-for="user in this.users" :key="user.email">{{ JSON.stringify(user) }}</pre>
+    </div>
+    <!-- <p >{{ apiMessage }}</p> -->
     <p v-if="loading">loading...</p>
   </div>
 </template>
@@ -17,10 +20,10 @@
 import axios from "axios";
 
 export default {
-  name: "external-api",
+  name: "users",
   data() {
     return {
-      apiMessage: "",
+      users: null,
       loading: null
     };
   },
@@ -32,15 +35,17 @@ export default {
       const token = await this.$auth.getTokenSilently()
 
       // Use Axios to make a call to the API
-      const { data } = await axios.get("/api/external", {
+      const { data } = await axios.get("/api/users", {
         headers: {
           Authorization: `Bearer ${token}`    // send the access token through the 'Authorization' header
         }
       });
 
+      // eslint-disable-next-line
+      console.log('data', data)
       if (data) {
-        this.loading = false
-        this.apiMessage = data;
+          this.loading = false
+          this.users = data.users
       }
     }
   }

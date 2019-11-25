@@ -6,7 +6,6 @@ const DEFAULT_REDIRECT_CALLBACK = () =>
   window.history.replaceState({}, document.title, window.location.pathname)
 
 let instance
-
 /** Returns the current instance of the SDK */
 export const getInstance = () => instance
 

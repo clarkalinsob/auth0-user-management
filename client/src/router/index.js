@@ -4,6 +4,7 @@ import Home from '../views/Home.vue'
 import Profile from '../views/Profile.vue'
 import { authGuard } from '../auth/authGuard'
 import ExternalApiView from '../views/ExternalApi.vue'
+import UsersView from '../views/Users.vue'
 
 Vue.use(VueRouter)
 
@@ -31,6 +32,12 @@ const routes = [
     path: '/external-api',
     name: 'external-api',
     component: ExternalApiView,
+    beforeEnter: authGuard
+  },
+  {
+    path: '/users',
+    name: 'users',
+    component: UsersView,
     beforeEnter: authGuard
   }
 ]

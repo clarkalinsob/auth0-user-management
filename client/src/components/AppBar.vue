@@ -46,7 +46,7 @@
 // .. imports removed for brevity
 
 export default {
-  name: "home",
+  name: "AppBar",
   components: {
   },
   methods: {

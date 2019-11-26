@@ -36,12 +36,6 @@
           </v-list-item-icon>
           <v-list-item-title>Home</v-list-item-title>
         </v-list-item>
-        <v-list-item to="/about">
-          <v-list-item-icon>
-            <v-icon>mdi-account-multiple</v-icon>
-          </v-list-item-icon>
-          <v-list-item-title>About</v-list-item-title>
-        </v-list-item>
         <v-list-item to="external-api">
           <v-list-item-icon>
             <v-icon>mdi-star</v-icon>
@@ -50,7 +44,7 @@
         </v-list-item>
         <v-list-item to="users">
           <v-list-item-icon>
-            <v-icon>mdi-star</v-icon>
+            <v-icon>mdi-account-multiple</v-icon>
           </v-list-item-icon>
           <v-list-item-title>Users</v-list-item-title>
         </v-list-item>

@@ -28,14 +28,11 @@ import AppBar from './components/AppBar'
 
 export default {
   name: 'App',
-
   components: {
     NavigationDrawer,
     AppBar
   },
-
   data: () => ({}),
-
   methods: {
 
   }

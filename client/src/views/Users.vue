@@ -1,53 +1,67 @@
 <template>
   <div>
-    <v-btn
-      @click="callApi"
-      target="_blank"
-      text
-    >
-      <span class="mr-2">Call Users API</span>
-      <v-icon>mdi-open-in-new</v-icon>
-    </v-btn>
     <div v-if="!loading">
-      <pre v-for="user in this.users" :key="user.email">{{ JSON.stringify(user) }}</pre>
+      <CrudTable v-bind:propUsers="this.users"/>
     </div>
-    <!-- <p >{{ apiMessage }}</p> -->
-    <p v-if="loading">loading...</p>
+    <div v-if="loading">
+      <v-progress-circular
+        :size="70"
+        :width="7"
+        color="blue"
+        indeterminate
+      ></v-progress-circular>
+    </div>
   </div>
 </template>
 
 <script>
 import axios from "axios";
+import CrudTable from '../components/CrudTable'
 
 export default {
-  name: "users",
+  name: "Users",
+  components: {
+    CrudTable
+  },
   data() {
     return {
-      users: null,
+      users: [],
       loading: null
     };
   },
-  methods: {
-    async callApi() {
-      this.loading = true
+  mounted: async function () {
+    this.loading = true
 
-      // Get the access token from the auth wrapper
-      const token = await this.$auth.getTokenSilently()
+    // Get the access token from the auth wrapper
+    const token = await this.$auth.getTokenSilently()
 
-      // Use Axios to make a call to the API
-      const { data } = await axios.get("/api/users", {
-        headers: {
-          Authorization: `Bearer ${token}`    // send the access token through the 'Authorization' header
-        }
-      });
-
-      // eslint-disable-next-line
-      console.log('data', data)
-      if (data) {
-          this.loading = false
-          this.users = data.users
+    // Use Axios to make a call to the API
+    const { data } = await axios.get("/api/usm/users/v1", {
+      headers: {
+        Authorization: `Bearer ${token}`    // send the access token through the 'Authorization' header
       }
+    });
+
+    // eslint-disable-next-line
+    console.log('data', data)
+    if (data) {
+      this.users = data.users
+      this.loading = false
     }
   }
 };
 </script>
+
+<style scoped>
+.v-progress-circular {
+  display: inline-block;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 200px;
+  height: 100px;
+  margin: auto;
+}
+</style>

@@ -17,7 +17,7 @@
 import axios from "axios";
 
 export default {
-  name: "external-api",
+  name: "ExternalApi",
   data() {
     return {
       apiMessage: "",

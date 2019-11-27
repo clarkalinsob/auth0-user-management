@@ -3,8 +3,9 @@ import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import Profile from '../views/Profile.vue'
 import { authGuard } from '../auth/authGuard'
-import ExternalApiView from '../views/ExternalApi.vue'
-import UsersView from '../views/Users.vue'
+import ExternalApiView from '../views/ExternalApi'
+import UsersView from '../views/Users'
+import RolesView from '../views/Roles'
 
 Vue.use(VueRouter)
 
@@ -30,6 +31,12 @@ const routes = [
     path: '/users',
     name: 'users',
     component: UsersView,
+    beforeEnter: authGuard
+  },
+  {
+    path: '/roles',
+    name: 'roles',
+    component: RolesView,
     beforeEnter: authGuard
   }
 ]

@@ -1,6 +1,5 @@
 <template>
-  <div>
-    <!-- <v-container>
+     <v-container>
       <v-row>
         <v-col cols="12">
           <v-text-field
@@ -17,37 +16,17 @@
           ></v-text-field>
         </v-col>
       </v-row>
-    </v-container> -->
-
-    <div v-if="!loading">
-      <CrudTable v-bind:propUsers="this.users"/>
-    </div>
-    <div v-if="loading">
-      <v-progress-circular
-        :size="70"
-        :width="7"
-        color="blue"
-        indeterminate
-      ></v-progress-circular>
-    </div>
-  </div>
+    </v-container>
 </template>
+
 
 <script>
 import axios from "axios";
-import CrudTable from '../components/CrudTable'
 
 export default {
-  name: "Users",
-  components: {
-    CrudTable
-  },
+  name: "SearchBar",
   data() {
     return {
-      users: [],
-      loading: null,
-
-      // for search bar
       searchName: '',
       searchEmail: ''
     };
@@ -68,6 +47,7 @@ export default {
             Authorization: `Bearer ${token}`    // send the access token through the 'Authorization' header
           }
         }
+
         const { data } = await axios.post("/api/v1/users/search/email", body, headers);
         
         if (data) {
@@ -76,34 +56,6 @@ export default {
         }
       }
   },
-  mounted: async function () {
-    this.loading = true
-    const token = await this.$auth.getTokenSilently()
-    const headers = {
-      headers: {
-        Authorization: `Bearer ${token}`    // send the access token through the 'Authorization' header
-      }
-    }
-    const { data } = await axios.get("/api/v1/users", headers); 
 
-    if (data) {
-      this.users = data.users
-      this.loading = false
-    }
-  }
 };
 </script>
-
-<style scoped>
-.v-progress-circular {
-  display: inline-block;
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  width: 200px;
-  height: 100px;
-  margin: auto;
-}
-</style>

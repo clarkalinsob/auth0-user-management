@@ -1,15 +1,22 @@
 const express = require('express')
 const dotenv = require('dotenv')
+const bodyParser = require('body-parser')
 dotenv.config()
 
-const usmRoute = require('./routes/usmRoute')
+// Import helper functions
 const checkJwt = require('./auth/checkJwt')
+
+// Import routes
+const usersRoute = require('./routes/usersRoute')
+const rolesRoute = require('./routes/rolesRoute')
 
 // Create a new Express app
 const app = express()
 
+app.use(bodyParser.json())
+
 // Public routes
-app.get('/api/external', checkJwt(process.env.AUTH0_AUDIENCE), (req, res) => {
+app.post('/api/external', (req, res) => {
   res.send({
     msg: 'Your Access Token was successfully validated!'
   })
@@ -26,7 +33,8 @@ app.use(function(err, req, res, next) {
 })
 
 // Protected routes
-app.use('/api/usm', usmRoute)
+app.use('/api/v1/users', usersRoute)
+app.use('/api/v1/roles', rolesRoute)
 
 // Start the app
 app.listen(process.env.PORT, () => console.log(`API listening on ${process.env.PORT}`))

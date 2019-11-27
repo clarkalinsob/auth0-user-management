@@ -48,6 +48,12 @@
           </v-list-item-icon>
           <v-list-item-title>Users</v-list-item-title>
         </v-list-item>
+        <v-list-item to="roles">
+          <v-list-item-icon>
+            <v-icon>mdi-account-tie</v-icon>
+          </v-list-item-icon>
+          <v-list-item-title>Roles</v-list-item-title>
+        </v-list-item>
       </v-list>
     </v-navigation-drawer>
 </template>

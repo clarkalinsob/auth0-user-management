@@ -11,14 +11,52 @@ router.get('/', function(req, res) {
       authorization: `Bearer ${process.env.AUTH0_MGMT_TOKEN}`,
       'cache-control': 'no-cache'
     },
-    // body: { name: 'ROLE_NAME', description: 'ROLE_DESC' },
     json: true
   }
 
   request(options, function(error, response, body) {
     if (error) throw new Error(error)
 
-    res.send({ users: body })
+    res.send({ roles: body })
+  })
+})
+
+router.post('/', function(req, res) {
+  const options = {
+    method: 'POST',
+    url: `https://${process.env.AUTH0_DOMAIN}/api/v2/roles`,
+    headers: {
+      'content-type': 'application/json',
+      authorization: `Bearer ${process.env.AUTH0_MGMT_TOKEN}`,
+      'cache-control': 'no-cache'
+    },
+    body: { name: req.body.name, description: req.body.description },
+    json: true
+  }
+
+  request(options, function(error, response, body) {
+    if (error) throw new Error(error)
+    else if (response.body.error) {
+      res.send({
+        error: response.body.message
+      })
+    } else {
+      res.send({ role: body })
+    }
+  })
+})
+
+router.post('/:roleId/delete', function(req, res) {
+  const options = {
+    method: 'DELETE',
+    url: `https://${process.env.AUTH0_DOMAIN}/api/v2/roles/${req.body.id}`,
+    headers: { authorization: `Bearer ${process.env.AUTH0_MGMT_TOKEN}` }
+  }
+
+  request(options, function(error, response, body) {
+    if (error) throw new Error(error)
+
+    res.send('Successfully deleted')
   })
 })
 

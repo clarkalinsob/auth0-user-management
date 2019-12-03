@@ -23,6 +23,7 @@ app.get('/api/external', (req, res) => {
 })
 
 // Check for authorization token for private and protected routes
+
 app.use(checkJwt(process.env.AUTH0_AUDIENCE))
 app.use(function(err, req, res, next) {
   console.log('jwt error', err)

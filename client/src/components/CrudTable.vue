@@ -18,6 +18,7 @@
           <template v-slot:activator="{ on }">
             <v-btn color="primary" dark class="mb-2" v-on="on">New User</v-btn>
           </template>
+
           <v-card>
             <v-card-title>
               <span class="headline">{{ formTitle }}</span>
@@ -51,6 +52,7 @@
         </v-dialog>
       </v-toolbar>
     </template>
+
     <template v-slot:item.picture="{ item }">
       <v-avatar size="36px">
         <img
@@ -59,30 +61,35 @@
         >
       </v-avatar>
     </template>
+
     <template v-slot:item.email_verified="{ item }">
       {{ item.email_verified ? 'Verified': 'Not Verified' }}
     </template>
+
     <template v-slot:item.last_login="{ item }">
       {{ getLastLogin(item.last_login) }}
     </template>
+
     <template v-slot:item.action="{ item }">
       <v-icon
-        small
+        medium
         class="mr-2"
         @click="editItem(item)"
       >
-        edit
+        mdi-pencil
       </v-icon>
       <v-icon
-        small
+        medium
         @click="deleteItem(item)"
       >
-        delete
+        mdi-delete
       </v-icon>
     </template>
+
     <template v-slot:no-data>
       <h3>No data to show</h3>
     </template>
+
   </v-data-table>
 </template>
 
@@ -92,31 +99,31 @@
   export default {
     props: ['propUsers'],
     data () {
-        return {
-            dialog: false,
-            headers: [
-                { text: 'Avatar', align: 'left', sortable: false, value: 'picture' },
-                { text: 'Name', sortable: true, value: 'name' },
-                { text: 'Email', sortable: true, value: 'email' },
-                { text: 'Email Status', sortable: true, value: 'email_verified' },
-                { text: 'Last Login', sortable: true, value: 'last_login' },
-                { text: 'Actions', sortable: false, value: 'action' },
-            ],
-            users: this.propUsers,
-            editedIndex: -1,
-            editedItem: {
-                name: '',
-                email: '',
-                email_verified: '',
-                last_login: '',
-            },
-            defaultItem: {
-                name: '',
-                email: '',
-                email_verified: '',
-                last_login: ''
-            },
-        }
+      return {
+        dialog: false,
+        headers: [
+          { text: 'Avatar', align: 'left', sortable: false, value: 'picture' },
+          { text: 'Name', sortable: true, value: 'name' },
+          { text: 'Email', sortable: true, value: 'email' },
+          { text: 'Email Status', sortable: true, value: 'email_verified' },
+          { text: 'Last Login', sortable: true, value: 'last_login' },
+          { text: 'Actions', sortable: false, value: 'action' },
+        ],
+        users: this.propUsers,
+        editedIndex: -1,
+        editedItem: {
+          name: '',
+          email: '',
+          email_verified: '',
+          last_login: '',
+        },
+        defaultItem: {
+          name: '',
+          email: '',
+          email_verified: '',
+          last_login: ''
+        },
+      }
     },
     computed: {
       formTitle () {

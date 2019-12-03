@@ -28,10 +28,11 @@
                 <v-row>
                   <v-col cols="12">
                     <v-text-field v-model="editedItem.name" label="Name*" required></v-text-field>
-                    {{ errorMessage }}
+                    {{ nameErrorMsg }}
                   </v-col>
                   <v-col cols="12">
                     <v-text-field v-model="editedItem.description" label="Description"></v-text-field>
+                    {{ descriptionErrorMsg }}
                   </v-col>
                 </v-row>
               </v-container>
@@ -65,23 +66,21 @@
           </v-card>
         </v-dialog>
 
-
-
       </v-toolbar>
     </template>
     <template v-slot:item.action="{ item }">
       <v-icon
-        small
+        medium
         class="mr-2"
         @click="editItem(item)"
       >
-        edit
+        mdi-pencil
       </v-icon>
       <v-icon
-        small
+        medium
         @click="deleteItem(item)"
       >
-        delete
+        mdi-delete
       </v-icon>
 
     </template>
@@ -99,7 +98,8 @@
     data () {
       return {
         loading: null,
-        errorMessage: '',
+        nameErrorMsg: '',
+        descriptionErrorMsg: '',
         dialog: false,
         deleteDialog: false,
         headers: [
@@ -146,7 +146,7 @@
       },
 
       close () {
-        this.errorMessage = ''
+        this.nameErrorMsg = ''
         this.dialog = false
         this.deleteDialog = false
         setTimeout(() => {
@@ -157,10 +157,9 @@
 
       async deleteRole () {
         this.loading = true
-        const params = this.editedItem.id
 
         const token = await this.$auth.getTokenSilently()
-        const { data } = await axios.post(`/api/v1/roles/${params}/delete`, this.editedItem, {
+        const { data } = await axios.post(`/api/v1/roles/${this.editedItem.id}/delete`, this.editedItem, {
             headers: {
             Authorization: `Bearer ${token}`
           },
@@ -175,26 +174,30 @@
       },
 
       async save () {
-        if (this.editedIndex > -1) {
-          if (this.editedItem.name.trim() === '') {
-            this.errorMessage = '"Name" is not allowed to be empty'
-          } else {
-            await this.postToApi(this.editedItem)
-          }
-        } else {
-          if (this.editedItem.name.trim() === '') {
-            this.errorMessage = '"Name" is not allowed to be empty'
-          } else {
-            await this.postToApi(this.editedItem)
-          }
+        (this.editedIndex > -1) ? this.checkInputs('edit') : this.checkInputs('add')
+      },
+
+      async checkInputs (action) {
+        this.nameErrorMsg = ''
+        this.descriptionErrorMsg = ''
+
+        if (this.editedItem.name.trim() === '') {
+          this.nameErrorMsg = '"Name" is not allowed to be empty'
+        } 
+        if (this.editedItem.description.trim() === '') {
+          this.descriptionErrorMsg = '"Description" is not allowed to be empty'
+        }
+        if (!this.nameErrorMsg && !this.descriptionErrorMsg) {
+          await this.postToApi(this.editedItem, action)  
         }
       },
 
-      async postToApi (item) {
+      async postToApi (item, action) {
         this.loading = true
-
+        
+        const url = action === 'add' ? `/api/v1/roles` :`/api/v1/roles/${item.id}/${action}`
         const token = await this.$auth.getTokenSilently()
-        const { data } = await axios.post("/api/v1/roles", item, {
+        const { data } = await axios.post(url, item, {
             headers: {
             Authorization: `Bearer ${token}`
           },
@@ -203,10 +206,10 @@
         data ? this.loading = false : this.loading = true
 
         if (data.role) {
-          this.roles.push(data.role)
+          action === 'add' ? this.roles.push(data.role) : Object.assign(this.roles[this.editedIndex], data.role)
           this.close()
         } else if (data.error) {
-          this.errorMessage = data.error
+          this.nameErrorMsg = data.error
         }
       }
     },

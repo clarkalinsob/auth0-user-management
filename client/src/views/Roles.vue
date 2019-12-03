@@ -38,6 +38,7 @@ export default {
   mounted: async function () {
     this.loading = true
     const token = await this.$auth.getTokenSilently()
+
     const headers = {
       headers: {
         Authorization: `Bearer ${token}`    // send the access token through the 'Authorization' header

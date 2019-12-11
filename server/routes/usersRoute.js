@@ -71,7 +71,6 @@ router.post('/', (req, res) => {
 
     request(options, function(error, response, body) {
       if (error) throw new Error(error)
-
       if (body.error) res.send({ error: body.message })
       else res.send({ user: body })
     })

@@ -23,43 +23,63 @@
           </template>
           <v-card>
             <v-card-title>
-              <span class="headline" v-text="`${formTitle}`"/>
+              <span class="headline" v-text="'Create User'"/>
             </v-card-title>
+            <v-divider/>
             <v-card-text>
-              <v-container>
-                <v-row v-if="editedIndex !== -1">
-                  <v-col cols="12">
-                    <v-text-field v-model="editedItem.name" label="Name"/>
-                  </v-col>
-                  <v-col cols="12">
-                    <v-text-field v-model="editedItem.email" label="Email"/>
-                  </v-col>
-                </v-row>
-                <v-row v-if="editedIndex === -1">
-                  <v-col cols="12">
-                    <v-text-field v-model="createItem.given_name" label="Given Name"/>
+              <v-row no-gutters class="mt-7">
+                <v-col cols="12">
+                  <v-text-field v-model="createItem.given_name" outlined label="Given Name" placeholder="John"/>
+                </v-col>
+                <v-col cols="12">
+                  <v-text-field v-model="createItem.family_name" outlined label="Family Name" placeholder="Doe"/>
+                </v-col>
+                <v-col cols="12">
+                  <v-text-field v-model="createItem.email" outlined label="Email" placeholder="johndoe@mail.com"/>
+                </v-col>
+                <v-col cols="12">
+                  <v-text-field v-model="createItem.password" type="password" outlined label="Password" placeholder="Enter password"/>
+                </v-col>
+                <v-col cols="12">
+                  <v-text-field v-model="createItem.confirmPassword" type="password" outlined label="Confirm Password" placeholder="Confirm password"/>
+                </v-col>
+                <v-col cols="12" class="mb-1" v-if="inputErrors.givenNameErrorMsg">
+                  <v-chip color='red darken-3' dark>
                     {{ inputErrors.givenNameErrorMsg }}
-                  </v-col>
-                  <v-col cols="12">
-                    <v-text-field v-model="createItem.family_name" label="Family Name"/>
+                  </v-chip>
+                </v-col>
+                <v-col cols="12" class="mb-1" v-if="inputErrors.familyNameErrorMsg">
+                  <v-chip color='red darken-3' dark>
                     {{ inputErrors.familyNameErrorMsg }}
-                  </v-col>
-                  <v-col cols="12">
-                    <v-text-field v-model="createItem.email" label="Email"/>
+                  </v-chip>
+                </v-col>
+                <v-col cols="12" class="mb-1" v-if="inputErrors.emailErrorMsg">
+                  <v-chip color='red darken-3' dark>
                     {{ inputErrors.emailErrorMsg }}
-                  </v-col>
-                  <v-col cols="12">
-                    <v-text-field v-model="createItem.password" type="password" label="Password"/>
+                  </v-chip>
+                </v-col>
+                <v-col cols="12" class="mb-1" v-if="inputErrors.passwordErrorMsg">
+                  <v-chip color='red darken-3' dark>
                     {{ inputErrors.passwordErrorMsg }}
-                  </v-col>
+                  </v-chip>
+                </v-col>
+                <v-col cols="12" v-if="inputErrors.confirmPasswordErrorMsg">
+                  <v-chip color='red darken-3' dark>
+                    {{ inputErrors.confirmPasswordErrorMsg }}
+                  </v-chip>
+                </v-col>
+                <v-col cols="12" v-if="responseError">
+                  <v-chip color='red darken-3' dark>
                     {{ responseError }}
-                </v-row>
-              </v-container>
+                  </v-chip>
+                </v-col>
+              </v-row>
             </v-card-text>
+            <v-divider/>
             <v-card-actions>
               <v-spacer/>
               <v-btn color="light-blue darken-4" text @click="close" v-text="'Cancel'"/>
-              <v-btn color="light-blue darken-4" text :loading="loading" @click="editedIndex === -1 ? onSaveCreate() : onSaveEdit()" v-text="'Save'"/>
+              <v-btn color="light-blue darken-4" text :loading="loading" @click="onSaveCreate">Save</v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -142,7 +162,8 @@ export default {
         givenNameErrorMsg: '',
         familyNameErrorMsg: '',
         emailErrorMsg: '',
-        passwordErrorMsg: ''
+        passwordErrorMsg: '',
+        confirmPasswordErrorMsg: ''
       },
       responseError: '',
       headers: [
@@ -171,14 +192,10 @@ export default {
         given_name: '',
         family_name: '',
         email: '',
-        password: ''
+        password: '',
+        confirmPassword: ''
       }
     }
-  },
-  computed: {
-    formTitle () {
-      return this.editedIndex === -1 ? 'New User' : 'Edit User'
-    },
   },
   watch: {
     dialog (val) {
@@ -189,15 +206,8 @@ export default {
     getLastLogin (date) {
       return moment(date).fromNow()
     },
-    
-    editItem (item) {
-      this.editedIndex = this.users.indexOf(item)
-      this.editedItem = Object.assign({}, item)
-      this.dialog = true
-    },
 
     deleteItem (item) {
-      this.editedIndex = this.users.indexOf(item)
       this.editedItem = Object.assign({}, item)
       this.showDeleteDialog = true
     },
@@ -215,6 +225,7 @@ export default {
 
     deleted ({ type }) {
       if (type === 'User') this.users.splice(this.users.indexOf(this.editedIndex), 1)
+      this.editedItem = {}
       this.showDeleteDialog = false
     },
 
@@ -229,6 +240,9 @@ export default {
 
     async onSaveCreate () {
       let checker = false
+
+      this.inputErrors = {}
+      this.responseError = ''
       if (this.createItem.given_name.trim() === '') {
         this.inputErrors.givenNameErrorMsg = '"Given Name" is not allowed to be empty'
         checker = true
@@ -239,6 +253,14 @@ export default {
       }
       if (this.createItem.password.trim() === '') {
         this.inputErrors.passwordErrorMsg = '"Password" is not allowed to be empty'
+        checker = true
+      }
+      if (this.createItem.confirmPassword.trim() === '') {
+        this.inputErrors.confirmPasswordErrorMsg = '"Confirm Password" is not allowed to be empty'
+        checker = true
+      } 
+      if (this.createItem.password != this.createItem.confirmPassword) {
+        this.inputErrors.confirmPasswordErrorMsg = 'Passwords are not the same'
         checker = true
       } 
       if (this.createItem.email.trim() === '') {
@@ -267,7 +289,7 @@ export default {
       const { data: { user, error } } = await axios.post(url, item, {
           headers: {
           Authorization: `Bearer ${token}`
-        },
+        }
       });
 
       if (error) this.responseError = error
@@ -284,6 +306,6 @@ export default {
       this.editedItem = Object.assign({}, item)
       this.showAssignRolesDialog = true
     }
-  },
+  }
 }
 </script>

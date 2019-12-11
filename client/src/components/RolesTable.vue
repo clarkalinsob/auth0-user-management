@@ -25,24 +25,32 @@
             <v-card-title>
               <span class="headline" v-text="`${formTitle}`"/>
             </v-card-title>
+            <v-divider/>
             <v-card-text>
-              <v-container>
-                <v-row>
-                  <v-col cols="12">
-                    <v-text-field v-model="editedItem.name" label="Name*" required/>
+              <v-row no-gutters class="mt-7">
+                <v-col no-gutters cols="12">
+                  <v-text-field v-model="editedItem.name" outlined label="Name" placeholder="Enter name"/>
+                </v-col>
+                <v-col cols="12">
+                  <v-text-field v-model="editedItem.description" outlined label="Description" placeholder="Enter description"/>  
+                </v-col>
+                <v-col cols="12" class="mb-1" v-if="nameErrorMsg">
+                  <v-chip color='red darken-3' dark>
                     {{ nameErrorMsg }}
-                  </v-col>
-                  <v-col cols="12">
-                    <v-text-field v-model="editedItem.description" label="Description"/>
+                  </v-chip>
+                </v-col>
+                <v-col cols="12" v-if="descriptionErrorMsg">
+                  <v-chip color='red darken-3' dark>
                     {{ descriptionErrorMsg }}
-                  </v-col>
-                </v-row>
-              </v-container>
+                  </v-chip>
+                </v-col>
+              </v-row>
             </v-card-text>
+            <v-divider/>
             <v-card-actions>
               <v-spacer/>
               <v-btn color="light-blue darken-4" text @click="close" v-text="'Cancel'"/>
-              <v-btn color="light-blue darken-4" text :loading="loading" @click="save" v-text="'Save'"/>
+              <v-btn color="light-blue darken-4" text :loading="loading" @click="save">Save</v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -116,7 +124,7 @@ export default {
   },
   computed: {
     formTitle () {
-      return this.editedIndex === -1 ? 'New Role' : 'Edit Role'
+      return this.editedIndex === -1 ? 'Create Role' : 'Edit Role'
     },
   },
   watch: {
@@ -132,7 +140,6 @@ export default {
     },
 
     deleteItem (item) {
-      this.editedIndex = this.roles.indexOf(item)
       this.editedItem = Object.assign({}, item)
       this.showDialog = true
     },
@@ -149,6 +156,7 @@ export default {
 
     deleted ({ type }) {
       if (type === 'Role') this.roles.splice(this.roles.indexOf(this.editedIndex), 1)
+      this.editedItem = {}
       this.showDialog = false
     },
 
@@ -179,18 +187,17 @@ export default {
       const { data: { role, error } } = await axios.post(url, item, {
           headers: {
           Authorization: `Bearer ${token}`
-        },
+        }
       });
 
-      if (error) {
-        this.nameErrorMsg = error
-      } else if (role) {
+      if (error) this.nameErrorMsg = error
+      else if (role) {
         action === 'add' ? this.roles.push(role) : Object.assign(this.roles[this.editedIndex], role)
         this.close()
       }
 
       this.loading = false
     }
-  },
+  }
 }
 </script>

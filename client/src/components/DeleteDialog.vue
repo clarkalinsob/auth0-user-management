@@ -5,9 +5,10 @@
       <span class="headline" v-text="`Delete ${type}?`"/>
     </v-card-title>
     <v-divider/>
-    <v-card-text class="mt-3">
+    <v-card-text class="mt-3 mb-3">
       Are you sure you want to delete "{{ item ? item.name : '' }}" ?
     </v-card-text>
+    <v-divider/>
     <v-card-actions>
       <v-spacer/>
       <v-btn color="light-blue darken-4" text @click="show = false" v-text="'Cancel'"/>

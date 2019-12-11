@@ -3,11 +3,11 @@
     :headers="headers"
     :items="roles"
     sort-by="name"
-    class="elevation-1"
+    class="elevation-1 pt-2"
   >
     <template v-slot:top>
-      <v-toolbar flat color="white">
-        <v-toolbar-title>Roles</v-toolbar-title>
+      <v-toolbar flat color="white" class="mb-4">
+        <v-toolbar-title v-text="'Roles'"/>
         <v-divider
           class="mx-4"
           inset
@@ -16,216 +16,181 @@
         <v-spacer></v-spacer>
         <v-dialog v-model="dialog" max-width="500px">
           <template v-slot:activator="{ on }">
-            <v-btn color="primary" dark class="mb-2" v-on="on">New Role</v-btn>
+            <v-btn color="orange accent-4" height="4em" dark class="mt-4 mb-2" v-on="on">
+              <v-icon class="pr-2" medium v-text="'mdi-plus'"/>
+              Create Role
+            </v-btn>
           </template>
           <v-card>
             <v-card-title>
-              <span class="headline">{{ formTitle }}</span>
+              <span class="headline" v-text="`${formTitle}`"/>
             </v-card-title>
-
             <v-card-text>
               <v-container>
                 <v-row>
                   <v-col cols="12">
-                    <v-text-field v-model="editedItem.name" label="Name*" required></v-text-field>
+                    <v-text-field v-model="editedItem.name" label="Name*" required/>
                     {{ nameErrorMsg }}
                   </v-col>
                   <v-col cols="12">
-                    <v-text-field v-model="editedItem.description" label="Description"></v-text-field>
+                    <v-text-field v-model="editedItem.description" label="Description"/>
                     {{ descriptionErrorMsg }}
                   </v-col>
                 </v-row>
               </v-container>
             </v-card-text>
-
             <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn color="blue darken-1" text @click="close">Cancel</v-btn>
-              <v-btn color="blue darken-1" text :loading="loading" @click="save">Save</v-btn>
+              <v-spacer/>
+              <v-btn color="light-blue darken-4" text @click="close" v-text="'Cancel'"/>
+              <v-btn color="light-blue darken-4" text :loading="loading" @click="save" v-text="'Save'"/>
             </v-card-actions>
           </v-card>
         </v-dialog>
-
-        <v-dialog v-model="deleteDialog" max-width="500px">
-          <v-card>
-            <v-card-title>
-              <span class="headline">Delete Role</span>
-            </v-card-title>
-
-            <v-card-text v-model="editedItem.name">
-              <v-container>
-                Are you sure you want to delete role "{{ editedItem.name }}" ?
-              </v-container>
-            </v-card-text>
-
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn color="blue darken-1" text @click="close">Cancel</v-btn>
-              <v-btn color="blue darken-1" text :loading="loading" @click="deleteRole">Delete</v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
-
+        <DeleteDialog 
+          :visible="showDialog" 
+          :type="'Role'"
+          :api="`roles/${editedItem.id}/delete`" 
+          :item="editedItem" 
+          @deleted="deleted" 
+          @close="showDialog = false"
+        />
       </v-toolbar>
     </template>
     <template v-slot:item.action="{ item }">
-      <v-icon
-        medium
-        class="mr-2"
-        @click="editItem(item)"
-      >
-        mdi-pencil
-      </v-icon>
-      <v-icon
-        medium
-        @click="deleteItem(item)"
-      >
-        mdi-delete
-      </v-icon>
-
+      <v-menu offset-y>
+        <template v-slot:activator="{ on }">
+          <v-btn color="light-blue darken-4" icon large dark v-on="on">
+            <v-icon large v-text="'mdi-dots-horizontal'"/>
+          </v-btn>
+        </template>
+        <v-list>
+          <v-list-item @click="editItem(item)">
+            <v-list-item-title v-text="'Edit'"/>
+          </v-list-item>
+          <v-divider/>
+          <v-list-item @click="deleteItem(item)">
+            <v-list-item-title v-text="'Delete'"/>
+          </v-list-item>
+        </v-list>
+      </v-menu>
     </template>
     <template v-slot:no-data>
-      <h3>No data to show</h3>
+      <h3 v-text="'No data to show'"/>
     </template>
   </v-data-table>
 </template>
 
 <script>
-  import axios from 'axios'
+import axios from 'axios'
+import DeleteDialog from '../components/DeleteDialog'
 
-  export default {
-    props: ['propRoles'],
-    data () {
-      return {
-        loading: null,
-        nameErrorMsg: '',
-        descriptionErrorMsg: '',
-        dialog: false,
-        deleteDialog: false,
-        headers: [
-          { text: 'Name', align: 'left', sortable: true, value: 'name' },
-          { text: 'Description', sortable: true, value: 'description' },
-          { text: 'Actions', sortable: false, value: 'action' },
-        ],
-        roles: this.propRoles,
-        editedIndex: -1,
-        editedItem: {
-          name: '',
-          description: '',
-        },
-        defaultItem: {
-          name: '',
-          description: '',
-        },
+export default {
+  name: "RolesTable",
+  components: {
+    DeleteDialog
+  },
+  props: ['propRoles'],
+  data () {
+    return {
+      showDialog: false,
+      loading: null,
+      nameErrorMsg: '',
+      descriptionErrorMsg: '',
+      dialog: false,
+      headers: [
+        { text: 'Name', align: 'left', sortable: true, value: 'name' },
+        { text: 'Description', sortable: true, value: 'description' },
+        { text: 'Actions', sortable: false, value: 'action' },
+      ],
+      roles: this.propRoles,
+      editedIndex: -1,
+      editedItem: {
+        name: '',
+        description: '',
+      },
+      defaultItem: {
+        name: '',
+        description: '',
+      },
+    }
+  },
+  computed: {
+    formTitle () {
+      return this.editedIndex === -1 ? 'New Role' : 'Edit Role'
+    },
+  },
+  watch: {
+    dialog (val) {
+      val || this.close()
+    }
+  },
+  methods: {
+    editItem (item) {
+      this.editedIndex = this.roles.indexOf(item)
+      this.editedItem = Object.assign({}, item)
+      this.dialog = true
+    },
+
+    deleteItem (item) {
+      this.editedIndex = this.roles.indexOf(item)
+      this.editedItem = Object.assign({}, item)
+      this.showDialog = true
+    },
+
+    close () {
+      this.nameErrorMsg = ''
+      this.descriptionErrorMsg = ''
+      this.dialog = false
+      setTimeout(() => {
+        this.editedItem = Object.assign({}, this.defaultItem)
+        this.editedIndex = -1
+      }, 300)
+    },
+
+    deleted ({ type }) {
+      if (type === 'Role') this.roles.splice(this.roles.indexOf(this.editedIndex), 1)
+      this.showDialog = false
+    },
+
+    async save () {
+      (this.editedIndex > -1) ? this.checkInputs('edit') : this.checkInputs('add')
+    },
+
+    async checkInputs (action) {
+      this.nameErrorMsg = ''
+      this.descriptionErrorMsg = ''
+
+      if (this.editedItem.name.trim() === '') {
+        this.nameErrorMsg = '"Name" is not allowed to be empty'
+      } 
+      if (this.editedItem.description.trim() === '') {
+        this.descriptionErrorMsg = '"Description" is not allowed to be empty'
+      }
+      if (!this.nameErrorMsg && !this.descriptionErrorMsg) {
+        await this.postToApi(this.editedItem, action)  
       }
     },
-    computed: {
-      formTitle () {
-        return this.editedIndex === -1 ? 'New Role' : 'Edit Role'
-      },
-    },
-    watch: {
-      dialog (val) {
-        val || this.close()
-      },
-      deleteDialog (val) {
-        val || this.close()
-      }
-    },
-    methods: {
-      editItem (item) {
-        this.editedIndex = this.roles.indexOf(item)
-        this.editedItem = Object.assign({}, item)
-        this.dialog = true
-      },
 
-      deleteItem (item) {
-        this.editedIndex = this.roles.indexOf(item)
-        this.editedItem = Object.assign({}, item)
-        this.deleteDialog = true
-      },
+    async postToApi (item, action) {
+      this.loading = true
+      
+      const url = action === 'add' ? `/api/v1/roles` :`/api/v1/roles/${item.id}/${action}`
+      const token = await this.$auth.getTokenSilently()
+      const { data: { role, error } } = await axios.post(url, item, {
+          headers: {
+          Authorization: `Bearer ${token}`
+        },
+      });
 
-      close () {
-        this.nameErrorMsg = ''
-        this.dialog = false
-        this.deleteDialog = false
-        setTimeout(() => {
-          this.editedItem = Object.assign({}, this.defaultItem)
-          this.editedIndex = -1
-        }, 300)
-      },
-
-      async deleteRole () {
-        this.loading = true
-
-        const token = await this.$auth.getTokenSilently()
-        const { data } = await axios.post(`/api/v1/roles/${this.editedItem.id}/delete`, this.editedItem, {
-            headers: {
-            Authorization: `Bearer ${token}`
-          },
-        });
-
-        if (data) {
-          this.roles.splice(this.editedIndex, 1)
-          this.loading = false
-        }
-        
+      if (error) {
+        this.nameErrorMsg = error
+      } else if (role) {
+        action === 'add' ? this.roles.push(role) : Object.assign(this.roles[this.editedIndex], role)
         this.close()
-      },
-
-      async save () {
-        (this.editedIndex > -1) ? this.checkInputs('edit') : this.checkInputs('add')
-      },
-
-      async checkInputs (action) {
-        this.nameErrorMsg = ''
-        this.descriptionErrorMsg = ''
-
-        if (this.editedItem.name.trim() === '') {
-          this.nameErrorMsg = '"Name" is not allowed to be empty'
-        } 
-        if (this.editedItem.description.trim() === '') {
-          this.descriptionErrorMsg = '"Description" is not allowed to be empty'
-        }
-        if (!this.nameErrorMsg && !this.descriptionErrorMsg) {
-          await this.postToApi(this.editedItem, action)  
-        }
-      },
-
-      async postToApi (item, action) {
-        this.loading = true
-        
-        const url = action === 'add' ? `/api/v1/roles` :`/api/v1/roles/${item.id}/${action}`
-        const token = await this.$auth.getTokenSilently()
-        const { data } = await axios.post(url, item, {
-            headers: {
-            Authorization: `Bearer ${token}`
-          },
-        });
-
-        data ? this.loading = false : this.loading = true
-
-        if (data.role) {
-          action === 'add' ? this.roles.push(data.role) : Object.assign(this.roles[this.editedIndex], data.role)
-          this.close()
-        } else if (data.error) {
-          this.nameErrorMsg = data.error
-        }
       }
-    },
-  }
-</script>
 
-<style scoped>
-.v-progress-circular {
-  display: inline-block;
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  width: 200px;
-  height: 100px;
-  margin: auto;
+      this.loading = false
+    }
+  },
 }
-</style>
+</script>

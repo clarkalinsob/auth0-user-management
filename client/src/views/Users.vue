@@ -19,33 +19,34 @@
       </v-row>
     </v-container> -->
 
-    <div v-if="!loading">
-      <CrudTable v-bind:propUsers="this.users"/>
-    </div>
-    <div v-if="loading">
-      <v-progress-circular
-        :size="70"
-        :width="7"
-        color="blue"
-        indeterminate
-      ></v-progress-circular>
-    </div>
+    <v-container v-if="errorMessage">
+      {{ errorMessage }} 
+    </v-container>
+
+    <v-container v-if="!loading && !errorMessage">
+      <UsersTable v-bind:propUsers="this.users"/>
+    </v-container>
+
+    <LoadingCircle v-if="loading"/>
   </div>
 </template>
 
 <script>
 import axios from "axios";
-import CrudTable from '../components/CrudTable'
+import UsersTable from '../components/UsersTable'
+import LoadingCircle from '../components/LoadingCircle'
 
 export default {
   name: "Users",
   components: {
-    CrudTable
+    UsersTable,
+    LoadingCircle
   },
   data() {
     return {
       users: [],
       loading: null,
+      errorMessage: '',
 
       // for search bar
       searchName: '',
@@ -53,28 +54,28 @@ export default {
     };
   },
   methods: {
-      clearMessage () {
-        this.searchName = ''
-        this.searchEmail = ''
-      },
-      async searchForEmail () {
-        this.loading = true
-        const token = await this.$auth.getTokenSilently()
-        const body = {
-          email: this.searchEmail
-        }
-        const headers = {
-          headers: {
-            Authorization: `Bearer ${token}`    // send the access token through the 'Authorization' header
-          }
-        }
-        const { data } = await axios.post("/api/v1/users/search/email", body, headers);
-        
-        if (data) {
-          this.users = data.users
-          this.loading = false
+    clearMessage () {
+      this.searchName = ''
+      this.searchEmail = ''
+    },
+    async searchForEmail () {
+      this.loading = true
+      const token = await this.$auth.getTokenSilently()
+      const body = {
+        email: this.searchEmail
+      }
+      const headers = {
+        headers: {
+          Authorization: `Bearer ${token}`    // send the access token through the 'Authorization' header
         }
       }
+      const { data: { error, users } } = await axios.post("/api/v1/users/search/email", body, headers);
+      
+      if (error) this.errorMessage = error.message
+      else if (users) this.users = users
+
+      this.loading = false
+    }
   },
   mounted: async function () {
     this.loading = true
@@ -84,26 +85,12 @@ export default {
         Authorization: `Bearer ${token}`    // send the access token through the 'Authorization' header
       }
     }
-    const { data } = await axios.get("/api/v1/users", headers); 
+    const { data: { error, users } } = await axios.get("/api/v1/users", headers); 
 
-    if (data) {
-      this.users = data.users
-      this.loading = false
-    }
+    if (error) this.errorMessage = error.message
+    else if (users) this.users = users
+
+    this.loading = false
   }
-};
-</script>
-
-<style scoped>
-.v-progress-circular {
-  display: inline-block;
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  width: 200px;
-  height: 100px;
-  margin: auto;
 }
-</style>
+</script>

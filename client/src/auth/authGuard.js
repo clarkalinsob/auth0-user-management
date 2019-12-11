@@ -7,6 +7,8 @@ export const authGuard = (to, from, next) => {
     // If the user is authenticated, continue with the route
     if (authService.isAuthenticated) return next()
     // Otherwise, log in
+
+    //eslint-disable-next-line
     authService.loginWithRedirect({ appState: { targetUrl: to.fullPath } })
   }
   // If loading has already finished, check our auth state using `fn()`

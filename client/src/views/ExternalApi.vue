@@ -28,16 +28,11 @@ export default {
     async callApi() {
       this.loading = true
 
-      // Get the access token from the auth wrapper
       const token = await this.$auth.getTokenSilently()
-      const tokenclaims = await this.$auth.getIdTokenClaims()
-      // eslint-disable-next-line
-      console.log('tokenclaims: ', tokenclaims)
 
-      // Use Axios to make a call to the API
       const { data } = await axios.get("/api/external", {
         headers: {
-          Authorization: `Bearer ${token}`    // send the access token through the 'Authorization' header
+          Authorization: `Bearer ${token}`
         }
       });
 
@@ -47,5 +42,5 @@ export default {
       }
     }
   }
-};
+}
 </script>

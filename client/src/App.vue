@@ -5,19 +5,17 @@
       <div v-if="$auth.isAuthenticated">
         <NavigationDrawer/>
       </div>
-
       <v-content>
         <router-view/>
       </v-content>
-
     </div>
     <div v-if="$auth.loading">
       <v-progress-circular
         :size="70"
         :width="7"
-        color="blue"
+        color="light-blue darken-4"
         indeterminate
-    ></v-progress-circular>
+    />
     </div>
   </v-app>
 </template>

@@ -23,6 +23,28 @@ router.use((err, _, res, next) => {
   next()
 })
 
+router.use('/', (req, res, next) => {
+  const options = {
+    method: 'POST',
+    url: `https://${process.env.AUTH0_DOMAIN}/oauth/token`,
+    headers: { 'content-type': 'application/json' },
+    form: {
+      client_id: process.env.AUTH0_M2M_CLIENT_ID,
+      client_secret: process.env.AUTH0_M2M_CLIENT_SECRET,
+      audience: AUDIENCE,
+      grant_type: 'client_credentials'
+    }
+  }
+
+  request(options, function(error, response, body) {
+    if (error) throw new Error(error)
+
+    const parsedToken = JSON.parse(body)
+    req.user.access_token = parsedToken.access_token
+    next()
+  })
+})
+
 router.get('/', (req, res) => {
   const allowedRoles = req.user[`${NAMESPACE}/roles`].filter(role => role === 'admin')
 
@@ -32,7 +54,7 @@ router.get('/', (req, res) => {
       url: `https://${process.env.AUTH0_DOMAIN}/api/v2/roles`,
       headers: {
         'content-type': 'application/json',
-        authorization: `Bearer ${process.env.AUTH0_MGMT_TOKEN}`,
+        authorization: `Bearer ${req.user.access_token}`,
         'cache-control': 'no-cache'
       },
       json: true
@@ -55,7 +77,7 @@ router.post('/', (req, res) => {
       url: `https://${process.env.AUTH0_DOMAIN}/api/v2/roles`,
       headers: {
         'content-type': 'application/json',
-        authorization: `Bearer ${process.env.AUTH0_MGMT_TOKEN}`,
+        authorization: `Bearer ${req.user.access_token}`,
         'cache-control': 'no-cache'
       },
       body: { name: req.body.name, description: req.body.description },
@@ -82,7 +104,7 @@ router.post('/:roleId/delete', (req, res) => {
     const options = {
       method: 'DELETE',
       url: `https://${process.env.AUTH0_DOMAIN}/api/v2/roles/${req.body.id}`,
-      headers: { authorization: `Bearer ${process.env.AUTH0_MGMT_TOKEN}` }
+      headers: { authorization: `Bearer ${req.user.access_token}` }
     }
 
     request(options, function(error, response, body) {
@@ -102,7 +124,7 @@ router.post('/:roleId/edit', (req, res) => {
       url: `https://${process.env.AUTH0_DOMAIN}/api/v2/roles/${req.body.id}`,
       headers: {
         'content-type': 'application/json',
-        authorization: `Bearer ${process.env.AUTH0_MGMT_TOKEN}`,
+        authorization: `Bearer ${req.user.access_token}`,
         'cache-control': 'no-cache'
       },
       body: { name: req.body.name, description: req.body.description },

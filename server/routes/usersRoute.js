@@ -24,6 +24,28 @@ router.use((err, req, res, next) => {
   next()
 })
 
+router.use('/', (req, res, next) => {
+  const options = {
+    method: 'POST',
+    url: `https://${process.env.AUTH0_DOMAIN}/oauth/token`,
+    headers: { 'content-type': 'application/json' },
+    form: {
+      client_id: process.env.AUTH0_M2M_CLIENT_ID,
+      client_secret: process.env.AUTH0_M2M_CLIENT_SECRET,
+      audience: AUDIENCE,
+      grant_type: 'client_credentials'
+    }
+  }
+
+  request(options, function(error, response, body) {
+    if (error) throw new Error(error)
+
+    const parsedToken = JSON.parse(body)
+    req.user.access_token = parsedToken.access_token
+    next()
+  })
+})
+
 // GET USERS
 router.get('/', (req, res) => {
   const allowedRoles = req.user[`${NAMESPACE}/roles`].filter(role => role === 'admin')
@@ -32,7 +54,7 @@ router.get('/', (req, res) => {
     const options = {
       method: 'GET',
       url: `https://${process.env.AUTH0_DOMAIN}/api/v2/users`,
-      headers: { authorization: `Bearer ${process.env.AUTH0_MGMT_TOKEN}` },
+      headers: { authorization: `Bearer ${req.user.access_token}` },
       json: true
     }
 
@@ -54,7 +76,7 @@ router.post('/', (req, res) => {
       url: `https://${process.env.AUTH0_DOMAIN}/api/v2/users`,
       headers: {
         'content-type': 'application/json',
-        authorization: `Bearer ${process.env.AUTH0_MGMT_TOKEN}`,
+        authorization: `Bearer ${req.user.access_token}`,
         'cache-control': 'no-cache'
       },
       body: {
@@ -85,7 +107,7 @@ router.get('/:userId', (req, res) => {
     const options = {
       method: 'GET',
       url: `https://${process.env.AUTH0_DOMAIN}/api/v2/users/${req.params.userId}`,
-      headers: { authorization: `Bearer ${process.env.AUTH0_MGMT_TOKEN}` },
+      headers: { authorization: `Bearer ${req.user.access_token}` },
       json: true
     }
 
@@ -105,7 +127,7 @@ router.post('/:userId/delete', (req, res) => {
     const options = {
       method: 'DELETE',
       url: `https://${process.env.AUTH0_DOMAIN}/api/v2/users/${req.body.user_id}`,
-      headers: { authorization: `Bearer ${process.env.AUTH0_MGMT_TOKEN}` }
+      headers: { authorization: `Bearer ${req.user.access_token}` }
     }
 
     request(options, function(error, response, body) {
@@ -123,7 +145,7 @@ router.get('/:userId/roles', (req, res) => {
     const options = {
       method: 'GET',
       url: `https://${process.env.AUTH0_DOMAIN}/api/v2/users/${req.params.userId}/roles`,
-      headers: { authorization: `Bearer ${process.env.AUTH0_MGMT_TOKEN}` },
+      headers: { authorization: `Bearer ${req.user.access_token}` },
       json: true
     }
 
@@ -145,7 +167,7 @@ router.post('/:userId/roles', (req, res) => {
       url: `https://${process.env.AUTH0_DOMAIN}/api/v2/users/${req.params.userId}/roles`,
       headers: {
         'content-type': 'application/json',
-        authorization: `Bearer ${process.env.AUTH0_MGMT_TOKEN}`,
+        authorization: `Bearer ${req.user.access_token}`,
         'cache-control': 'no-cache'
       },
       body: { roles: req.body },
@@ -169,7 +191,7 @@ router.post('/:userId/roles/delete', (req, res) => {
       url: `https://${process.env.AUTH0_DOMAIN}/api/v2/users/${req.params.userId}/roles`,
       headers: {
         'content-type': 'application/json',
-        authorization: `Bearer ${process.env.AUTH0_MGMT_TOKEN}`,
+        authorization: `Bearer ${req.user.access_token}`,
         'cache-control': 'no-cache'
       },
       body: { roles: [req.body.id] },
@@ -191,7 +213,7 @@ router.post('/search/email', (req, res) => {
     const options = {
       method: 'GET',
       url: `https://${process.env.AUTH0_DOMAIN}/api/v2/users`,
-      headers: { authorization: `Bearer ${process.env.AUTH0_MGMT_TOKEN}` },
+      headers: { authorization: `Bearer ${req.user.access_token}` },
       qs: { q: `email:*${req.body.email}*`, search_engine: 'v3' },
       json: true
     }

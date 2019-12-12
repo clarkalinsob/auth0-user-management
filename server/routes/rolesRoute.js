@@ -4,7 +4,7 @@ const router = express.Router()
 
 const checkJwt = require('../auth/checkJwt')
 const AUDIENCE = `https://${process.env.AUTH0_DOMAIN}/api/v2/`
-const NAMESPACE = 'https://api.vue-auth0.com'
+const NAMESPACE = 'https://api.auth0-user-management.com'
 const errorObj = {
   error: {
     name: 'UnauthorizedError',

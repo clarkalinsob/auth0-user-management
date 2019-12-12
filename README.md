@@ -8,7 +8,7 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Prerequisites
 
-1. You must have docker and docker-compose in your machine.
+1. You must have `docker` and `docker-compose` in your machine.
 
 2. Create `auth_config.json` on `client` root folder and add your client credentials.
 ```
@@ -24,7 +24,7 @@ These instructions will get you a copy of the project up and running on your loc
 VUE_APP_URL=YOUR_URL
 ```
 
-4. Create .env on `server` root folder and add your client and m2m credentials.
+4. Create `.env` on `server` root folder and add your client and m2m credentials.
 ```
 AUTH0_DOMAIN=YOUR_AUTH0_DOMAIN
 AUTH0_CLIENT_ID=YOUR_AUTH0_CLIENT_ID

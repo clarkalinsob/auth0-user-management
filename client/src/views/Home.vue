@@ -11,17 +11,6 @@ export default {
   name: "Home",
   components: {
     HelloWorld
-  },
-  methods: {
-    login() {
-      this.$auth.loginWithRedirect();
-    },
-
-    logout() {
-      this.$auth.logout({
-        returnTo: window.location.origin
-      })
-    }
   }
 }
 </script>

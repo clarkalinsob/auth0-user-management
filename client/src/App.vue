@@ -29,10 +29,6 @@ export default {
   components: {
     NavigationDrawer,
     AppBar
-  },
-  data: () => ({}),
-  methods: {
-
   }
 };
 </script>

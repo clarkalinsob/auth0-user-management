@@ -26,8 +26,6 @@
           Will be available soon!
         </p>
       </v-flex>
-
-
     </v-layout>
   </v-container>
 </template>
@@ -35,5 +33,5 @@
 <script>
 export default {
   name: 'HelloWorld'
-};
+}
 </script>

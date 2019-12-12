@@ -11,7 +11,6 @@
           <v-list-item-avatar>
             <img :src="$auth.user.picture">
           </v-list-item-avatar>
-
           <v-list-item-content>
             <v-list-item-title>{{ $auth.user.name }}</v-list-item-title>
             <v-list-item-subtitle>{{ $auth.user.email }}</v-list-item-subtitle>

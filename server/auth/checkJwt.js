@@ -2,7 +2,6 @@ const jwt = require('express-jwt')
 const jwksRsa = require('jwks-rsa')
 
 const checkJwt = audience => {
-  // Define middleware that validates incoming bearer tokens
   const validateToken = jwt({
     secret: jwksRsa.expressJwtSecret({
       cache: true,

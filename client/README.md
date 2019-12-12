@@ -1,2 +1,2 @@
-# vue-auth0
-Vue.Js and Auth0 Prototype
+# auth0-user-management
+Auth0 and VueJS User Management App

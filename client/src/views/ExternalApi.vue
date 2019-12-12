@@ -30,7 +30,7 @@ export default {
 
       const token = await this.$auth.getTokenSilently()
 
-      const { data } = await axios.get("/api/external", {
+      const { data } = await axios.get(`${process.env.VUE_APP_URL}/api/external`, {
         headers: {
           Authorization: `Bearer ${token}`
         }

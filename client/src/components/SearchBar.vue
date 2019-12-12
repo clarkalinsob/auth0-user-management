@@ -48,7 +48,7 @@ export default {
           }
         }
 
-        const { data } = await axios.post("/api/v1/users/search/email", body, headers);
+        const { data } = await axios.post(`${process.env.VUE_APP_URL}/api/v1/users/search/email`, body, headers);
         
         if (data) {
           this.users = data.users

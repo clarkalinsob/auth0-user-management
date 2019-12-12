@@ -43,7 +43,7 @@ export default {
       this.loading = true
 
       const token = await this.$auth.getTokenSilently()
-      const data = await axios.post(`/api/v1/${this.api}`, this.item, {
+      const data = await axios.post(`${process.env.VUE_APP_URL}/api/v1/${this.api}`, this.item, {
           headers: {
           Authorization: `Bearer ${token}`
         },

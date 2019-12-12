@@ -1,6 +1,7 @@
 const express = require('express')
 const dotenv = require('dotenv')
 const bodyParser = require('body-parser')
+const cors = require('cors')
 dotenv.config()
 
 const usersRoute = require('./routes/usersRoute')
@@ -8,6 +9,7 @@ const rolesRoute = require('./routes/rolesRoute')
 
 const app = express()
 
+app.use(cors())
 app.use(bodyParser.json())
 
 // Test Route

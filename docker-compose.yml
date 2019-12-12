@@ -1,0 +1,24 @@
+version: '3'
+
+networks:
+  um-network:
+    driver: bridge
+
+services:
+  client:
+    container_name: um-client
+    restart: always
+    build: ./client
+    ports:
+      - 80:8080
+    networks:
+      - um-network
+
+  server:
+    container_name: um-server
+    restart: always
+    build: ./server
+    ports:
+      - 3001:3001
+    networks:
+      - um-network

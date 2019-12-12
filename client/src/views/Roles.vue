@@ -43,7 +43,7 @@ export default {
         Authorization: `Bearer ${token}`
       }
     }
-    const { data: { error, roles } } = await axios.get("/api/v1/roles", headers); 
+    const { data: { error, roles } } = await axios.get(`${process.env.VUE_APP_URL}/api/v1/roles`, headers); 
 
     if (error) this.errorMessage = error.message
     else if (roles) this.roles = roles

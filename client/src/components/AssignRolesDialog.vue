@@ -87,13 +87,13 @@ export default {
     },
 
     async getUserRoles (headers) {
-      const { data: { roles }} = await axios.get(`/api/v1/users/${this.userId}/roles`, headers);
+      const { data: { roles }} = await axios.get(`${process.env.VUE_APP_URL}/api/v1/users/${this.userId}/roles`, headers);
 
       return roles
     },
 
     async getRawRoles (headers) {
-      const { data: { roles }} = await axios.get(`/api/v1/roles`, headers);
+      const { data: { roles }} = await axios.get(`${process.env.VUE_APP_URL}/api/v1/roles`, headers);
       
       return roles
     },
@@ -118,7 +118,7 @@ export default {
 
         const token = await this.$auth.getTokenSilently()
 
-        const data = await axios.post(`/api/v1/users/${this.userId}/roles`, this.mapRoles(addRoles, 'id'), {
+        const data = await axios.post(`${process.env.VUE_APP_URL}/api/v1/users/${this.userId}/roles`, this.mapRoles(addRoles, 'id'), {
           headers: {
             Authorization: `Bearer ${token}`
           }

@@ -184,7 +184,7 @@ export default {
       this.loading = true
 
       const token = await this.$auth.getTokenSilently()
-      const { data: { user, error }} = await axios.get(`/api/v1/users/${this.$route.params.id}`, {
+      const { data: { user, error }} = await axios.get(`${process.env.VUE_APP_URL}/api/v1/users/${this.$route.params.id}`, {
           headers: {
           Authorization: `Bearer ${token}`
         },
@@ -200,7 +200,7 @@ export default {
       this.roleLoading = true
 
       const token = await this.$auth.getTokenSilently()
-      const { data: { roles, error }} = await axios.get(`/api/v1/users/${this.user.user_id}/roles`, {
+      const { data: { roles, error }} = await axios.get(`${process.env.VUE_APP_URL}/api/v1/users/${this.user.user_id}/roles`, {
           headers: {
           Authorization: `Bearer ${token}`
         },

@@ -284,7 +284,7 @@ export default {
     async postToApi (item, action) {
       this.loading = true
       
-      const url = action === 'add' ? `/api/v1/users` :`/api/v1/users/${item.id}/${action}`
+      const url = action === 'add' ? `${process.env.VUE_APP_URL}/api/v1/users` :`${process.env.VUE_APP_URL}/api/v1/users/${item.id}/${action}`
       const token = await this.$auth.getTokenSilently()
       const { data: { user, error } } = await axios.post(url, item, {
           headers: {

@@ -69,7 +69,7 @@ export default {
           Authorization: `Bearer ${token}`    // send the access token through the 'Authorization' header
         }
       }
-      const { data: { error, users } } = await axios.post("/api/v1/users/search/email", body, headers);
+      const { data: { error, users } } = await axios.post(`${process.env.VUE_APP_URL}/api/v1/users/search/email`, body, headers);
       
       if (error) this.errorMessage = error.message
       else if (users) this.users = users
@@ -85,7 +85,7 @@ export default {
         Authorization: `Bearer ${token}`    // send the access token through the 'Authorization' header
       }
     }
-    const { data: { error, users } } = await axios.get("/api/v1/users", headers); 
+    const { data: { error, users } } = await axios.get(`${process.env.VUE_APP_URL}/api/v1/users`, headers); 
 
     if (error) this.errorMessage = error.message
     else if (users) this.users = users

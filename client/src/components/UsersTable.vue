@@ -208,6 +208,7 @@ export default {
     },
 
     deleteItem (item) {
+      this.editedIndex = this.users.indexOf(item)
       this.editedItem = Object.assign({}, item)
       this.showDeleteDialog = true
     },
@@ -225,6 +226,7 @@ export default {
 
     deleted ({ type }) {
       if (type === 'User') this.users.splice(this.users.indexOf(this.editedIndex), 1)
+      this.editedIndex = -1
       this.editedItem = {}
       this.showDeleteDialog = false
     },

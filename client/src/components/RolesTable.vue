@@ -140,6 +140,7 @@ export default {
     },
 
     deleteItem (item) {
+      this.editedIndex = this.roles.indexOf(item)
       this.editedItem = Object.assign({}, item)
       this.showDialog = true
     },
@@ -156,6 +157,7 @@ export default {
 
     deleted ({ type }) {
       if (type === 'Role') this.roles.splice(this.roles.indexOf(this.editedIndex), 1)
+      this.editedIndex = -1
       this.editedItem = {}
       this.showDialog = false
     },

@@ -4,7 +4,7 @@ const router = express.Router()
 
 const checkJwt = require('../auth/checkJwt')
 const AUDIENCE = `https://${process.env.AUTH0_DOMAIN}/api/v2/`
-const NAMESPACE = 'https://api.auth0-user-management.com'
+const NAMESPACE = 'https://um.egbertapps.com'
 const errorObj = {
   error: {
     name: 'UnauthorizedError',
@@ -36,7 +36,7 @@ router.use('/', (req, res, next) => {
     }
   }
 
-  request(options, function(error, response, body) {
+  request(options, function (error, response, body) {
     if (error) throw new Error(error)
 
     const parsedToken = JSON.parse(body)
@@ -107,7 +107,7 @@ router.post('/:roleId/delete', (req, res) => {
       headers: { authorization: `Bearer ${req.user.access_token}` }
     }
 
-    request(options, function(error, response, body) {
+    request(options, function (error, response, body) {
       if (error) throw new Error(error)
 
       res.send('Successfully deleted')

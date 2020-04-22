@@ -4,8 +4,8 @@ const router = express.Router()
 
 const checkJwt = require('../auth/checkJwt')
 const AUDIENCE = `https://${process.env.AUTH0_DOMAIN}/api/v2/`
-const NAMESPACE = 'https://api.auth0-user-management.com'
-const CONNECTION = 'Lmcenter-Email-Password-Auth'
+const NAMESPACE = 'https://um.egbertapps.com'
+const CONNECTION = 'Email-Password-Authentication'
 const error401 = {
   error: {
     name: 'UnauthorizedError',
@@ -37,7 +37,7 @@ router.use('/', (req, res, next) => {
     }
   }
 
-  request(options, function(error, response, body) {
+  request(options, function (error, response, body) {
     if (error) throw new Error(error)
 
     const parsedToken = JSON.parse(body)
@@ -58,7 +58,7 @@ router.get('/', (req, res) => {
       json: true
     }
 
-    request(options, function(error, response, body) {
+    request(options, function (error, response, body) {
       if (error) throw new Error(error)
 
       res.send({ users: body })
@@ -91,7 +91,7 @@ router.post('/', (req, res) => {
       json: true
     }
 
-    request(options, function(error, response, body) {
+    request(options, function (error, response, body) {
       if (error) throw new Error(error)
       if (body.error) res.send({ error: body.message })
       else res.send({ user: body })
@@ -111,7 +111,7 @@ router.get('/:userId', (req, res) => {
       json: true
     }
 
-    request(options, function(error, response, body) {
+    request(options, function (error, response, body) {
       if (error) throw new Error(error)
       if (body.error) res.send({ error: body.error.message })
       else res.send({ user: body })
@@ -130,7 +130,7 @@ router.post('/:userId/delete', (req, res) => {
       headers: { authorization: `Bearer ${req.user.access_token}` }
     }
 
-    request(options, function(error, response, body) {
+    request(options, function (error, response, body) {
       if (error) throw new Error(error)
       else res.status(200).send()
     })
@@ -149,7 +149,7 @@ router.get('/:userId/roles', (req, res) => {
       json: true
     }
 
-    request(options, function(error, response, body) {
+    request(options, function (error, response, body) {
       if (error) throw new Error(error)
       if (body.error) res.send({ error: body.error.message })
       else res.send({ roles: body })
@@ -174,7 +174,7 @@ router.post('/:userId/roles', (req, res) => {
       json: true
     }
 
-    request(options, function(error, response, body) {
+    request(options, function (error, response, body) {
       if (error) throw new Error(error)
       else res.status(200).send()
     })
@@ -198,7 +198,7 @@ router.post('/:userId/roles/delete', (req, res) => {
       json: true
     }
 
-    request(options, function(error, response, body) {
+    request(options, function (error, response, body) {
       if (error) throw new Error(error)
       else res.status(200).send()
     })
@@ -218,7 +218,7 @@ router.post('/search/email', (req, res) => {
       json: true
     }
 
-    request(options, function(error, response, body) {
+    request(options, function (error, response, body) {
       if (error) throw new Error(error)
       if (body.error) res.send({ users: [] })
       else res.send({ users: body })

@@ -2,7 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 
 // Import Views
-import Home from '../views/Home'
+// import Home from '../views/Home'
 import Profile from '../views/Profile'
 import ExternalApiView from '../views/ExternalApi'
 import UsersView from '../views/Users'
@@ -19,7 +19,9 @@ const routes = [
   {
     path: '/',
     name: 'home',
-    component: Home
+    redirect: '/users',
+    // component: EmptyRouterView,
+    beforeEnter: authGuard
   },
   {
     path: '/external-api',

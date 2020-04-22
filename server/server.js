@@ -23,6 +23,6 @@ app.get('/api/external', (req, res) => {
 app.use('/api/v1/users', usersRoute)
 app.use('/api/v1/roles', rolesRoute)
 
-const port = process.env.PORT || 5000
+const port = process.env.PORT || 5001
 // Start the app
 app.listen(port, () => console.log(`API listening on ${port}`))

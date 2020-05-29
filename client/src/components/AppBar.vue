@@ -41,7 +41,7 @@ export default {
       });
     },
     toBugStalker() {
-      window.open("http://localhost:4200/dashboard");
+      window.open("https://bugstalker.clarkalinsob.com/dashboard");
     }
   }
 };

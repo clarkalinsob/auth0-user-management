@@ -1,1 +1,1 @@
-npm run serve
+serve -s dist
